@@ -2,7 +2,7 @@ from math import pow
 from operator import itemgetter
 from signal import SIGINT, signal
 
-# ///////////////////////////////////////////////////////////////////////////////
+# ////////////////////////////////////////////////////////////////////////////////
 
 
 def get_n_host(num):
@@ -16,11 +16,11 @@ def get_n_host(num):
 
 
 def get_hosts(host_num):
-
+    """ Array with host data """
     host_data = [0] * 3
 
-    host_data[0] = get_n_host(int(host_num))
-    mask_inf = adapted_mask_host(host_data[0])
+    host_data[0] = get_n_host(int(host_num))  # Num of
+    mask_inf = adapted_mask_host(host_data[0])  # Position
     host_data[1] = mask_inf[1]
     host_data[2] = increment_num(mask_inf)
 
@@ -63,7 +63,7 @@ def adapted_mask_host(n):
     mask_inf[1] = pos
     return mask_inf
 
-# ///////////////////////////////////////////////////////////////////////////////
+# ////////////////////////////////////////////////////////////////////////////////
 
 
 def get_n_subnet(num):
@@ -117,7 +117,7 @@ def adapted_mask_subnet(subnet_mask, n):
     print("Mascara de subred adaptada: {}".format(subnet_mask))
     return mask_inf
 
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 def bin_to_dec(x):
@@ -201,7 +201,7 @@ def increment_num(mask_inf):
         inc = 256-int(mask_inf[0][2])
     elif int(mask_inf[1]) == 3:
         inc = 256-int(mask_inf[0][3])
-    print("Numero de incremento: {}".format(inc))
+    print("Numero de incremento: {}\n".format(inc))
     return inc
 
 
@@ -221,7 +221,7 @@ def eight_bits(ipA):
         j = 1
         i += 1
         temp = ''
-    
+
     i = 0
     j = 0
     while i < 4:
@@ -287,7 +287,7 @@ def special_net_ip(ipA, special_mask_num):
         net_ip[i] = bin_to_dec(bin(int(net_ip[i], 2)))
         subnet_mask[i] = bin_to_dec(bin(int(subnet_mask[i], 2)))
         i += 1
-    print("La ip de red de la ip ingresada es: {}".format(net_ip))
+    print("\n\nLa ip de red de la ip ingresada es: {}".format(net_ip))
     print("La mascara de subred de la ip ingresada es: {}".format(subnet_mask))
     subnet_ip_and_subnet_mask[0] = net_ip
     subnet_ip_and_subnet_mask[1] = subnet_mask
@@ -305,14 +305,15 @@ def net_ip_func(ipA, subnet_mask):
         temp = [''] * 8
         j = 0
         while j < 8:
-            temp[j] = "{0:b}".format(int(binary[i][j]) & int(binary_subnet_mask[i][j]))
+            temp[j] = "{0:b}".format(
+                int(binary[i][j]) & int(binary_subnet_mask[i][j]))
             aux += temp[j]
             j += 1
-                
+
         net_ip[i] = aux
         aux = ''
         i += 1
-    
+
     i = 0
     while i < 4:
         j = 0
@@ -320,11 +321,11 @@ def net_ip_func(ipA, subnet_mask):
         while j < 8:
             temp += str(binary_subnet_mask[i][j])
             j += 1
-        net_ip[i] = bin_to_dec(bin(int(net_ip[i], base = 2)))
-        subnet_mask[i] = bin_to_dec(bin(int(temp, base = 2)))
+        net_ip[i] = bin_to_dec(bin(int(net_ip[i], base=2)))
+        subnet_mask[i] = bin_to_dec(bin(int(temp, base=2)))
         i += 1
 
-    print("La ip de red de la ip ingresada es: {}".format(net_ip))
+    print("\n\nLa ip de red de la ip ingresada es: {}".format(net_ip))
 
     return net_ip
 
@@ -344,7 +345,7 @@ def special_ip_broadcast(subnet_ip, special_mask_num):
     i = pos_i
     j = pos_j
     k = 0
-    temp = [''] * 8 
+    temp = [''] * 8
 
     while k < j:
         temp[k] += binary_subnet[i][k]
@@ -355,7 +356,7 @@ def special_ip_broadcast(subnet_ip, special_mask_num):
         if j < 8:
             temp[j] = "1"
             j += 1
-        
+
         else:
             while k < 8:
                 binary_subnet[i][k] = temp[k]
@@ -364,7 +365,7 @@ def special_ip_broadcast(subnet_ip, special_mask_num):
             j = 0
             i += 1
             temp = [''] * 8
-    
+
     i = 0
     temp = ''
     while i < 4:
@@ -373,10 +374,10 @@ def special_ip_broadcast(subnet_ip, special_mask_num):
         while j < 8:
             temp += str(binary_subnet[i][j])
             j += 1
-        broadcast_ip[i] = bin_to_dec(bin(int(temp, base = 2)))    
+        broadcast_ip[i] = bin_to_dec(bin(int(temp, base=2)))
         i += 1
 
-    print("Broadcast ip: {}".format(broadcast_ip))
+    print("Broadcast ip: {}\n\n".format(broadcast_ip))
 
 
 def ip_broadcast_func(subnet_ip, category):
@@ -389,15 +390,15 @@ def ip_broadcast_func(subnet_ip, category):
 
     binary_subnet = eight_bits(copy_subnet_ip)
     broadcast_ip = [0] * 4
-    
+
     i = category
     while i < 4:
         j = 0
         while j < 8:
             binary_subnet[i][j] = "1"
-            j += 1 
+            j += 1
         i += 1
-            
+
     i = 0
     temp = ''
     while i < 4:
@@ -406,9 +407,9 @@ def ip_broadcast_func(subnet_ip, category):
         while j < 8:
             temp += str(binary_subnet[i][j])
             j += 1
-        broadcast_ip[i] = bin_to_dec(bin(int(temp, base = 2)))
+        broadcast_ip[i] = bin_to_dec(bin(int(temp, base=2)))
         i += 1
-    print("Broadcast ip: {}".format(broadcast_ip))
+    print("Broadcast ip: {}\n\n".format(broadcast_ip))
 
 
 def limits_check(ipA):
@@ -556,7 +557,7 @@ def range_hosts(net_ip, broadcast_ip_subnet, subnet_pos):
 
     return r
 
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
 def questions(answer):
@@ -571,14 +572,14 @@ def questions(answer):
         ipA = split_string(ip)
 
     category = ip_category(ipA[0])
-    
- #############################################################   
+
+ #############################################################
     ssnm = input(
         "¿Su ip tiene una mascara de subred especial? \n\t y = yes\tn = no\n#R:")
     if ssnm.lower() == 'y':
 
         special_mask_num = int(
-            input("Ingrese el numero de la mascara de subred a continuación: "))
+            input("\nIngrese el numero de la mascara de subred a continuación: "))
         subnet_ip_and_subnet_mask = special_net_ip(ipA, special_mask_num)
         net_ip = subnet_ip_and_subnet_mask[0]
         subnet_mask = subnet_ip_and_subnet_mask[1]
@@ -593,7 +594,6 @@ def questions(answer):
     else:
         print("Ingrese una opción válida.")
 
-    
     ######################################
     if answer == 's':
         temp_subnet = [0] * 3
@@ -611,8 +611,9 @@ def questions(answer):
         subnet_for_host_num = int(input(
             "¿Cuántas subredes de n-host desea obtener?\t(omitiendo repeticiones)\n#R: "))
         temp_subnet_list = [0] * subnet_for_host_num
-
+        print("")
         while i < subnet_for_host_num:
+            print("|//////////////////////////////////////////////////////////////|")
             host_num = int(input(
                 "Ingrese el numero de hosts que desea obtener para la red núm. {}: ".format(i+1)))
             subnet_num = int(
@@ -620,21 +621,23 @@ def questions(answer):
 
             temp_subnet = [0] * 4
             host_data = get_hosts(host_num)
-            temp_subnet[0] = subnet_num
+            temp_subnet[0] = subnet_num  # Subnet No. request
             temp_subnet[1] = host_data[1]
             temp_subnet[2] = host_data[2]
             temp_subnet[3] = host_num
             temp_subnet_list[i] = temp_subnet
             i += 1
+            print("|//////////////////////////////////////////////////////////////|")
 
         print("\n#################################################################################################")
 
         # Sorting the subnet list to descending form
-        i = 0
         sorted_subnet_list = sorted(
             temp_subnet_list, key=itemgetter(3), reverse=True)
         final_subnet_list = [0] * subnet_for_host_num
 
+        i = 0
+        # Saving the final data in the array for print(sorted)
         while i < subnet_for_host_num:
             temp_subnet = [0] * 3
             temp_subnet[0] = sorted_subnet_list[i][0]
@@ -653,13 +656,13 @@ fp = open("banner.ban", "r", encoding='UTF-8')
 
 print(fp.read())
 answer = input(
-    "\n--------------->¿Desea obtener subredes o hosts? \n--------------->Subredes = s\tHosts = h\n#R: ")
+    "\n---------------> Generate subnets only with the IP or subnets based on hosts? \n---------------> Subnets = s\tHosts = h\n#R: ")
 while True:
     if answer == 'h' or answer == 's':
         break
     else:
-        print("Dato de entrada incorrecto.")
+        print("\nInput data error!")
         answer = input(
-            "\n--------------->¿Desea obtener subredes o hosts? \n--------------->Subredes = s\tHosts = h\n#R: ")
+            "\n---------------> Generate subnets only with the IP or subnets based on hosts? \n---------------> Subnets = s\tHosts = h\n#R: ")
 
 questions(answer)
