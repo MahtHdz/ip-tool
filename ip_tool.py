@@ -2,7 +2,8 @@ from math import pow
 from operator import itemgetter
 from signal import SIGINT, signal
 
-# ////////////////////////////////////////////////////////////////////////////////
+
+# ///////////////////////////////Host functions///////////////////////////////////
 
 
 def get_n_host(num):
@@ -63,7 +64,8 @@ def adapted_mask_host(n):
     mask_inf[1] = pos
     return mask_inf
 
-# ////////////////////////////////////////////////////////////////////////////////
+
+# //////////////////////////////Subnet functions//////////////////////////////////
 
 
 def get_n_subnet(num):
@@ -117,7 +119,8 @@ def adapted_mask_subnet(subnet_mask, n):
     print("Mascara de subred adaptada: {}".format(subnet_mask))
     return mask_inf
 
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+# //////////////////////////////General functions/////////////////////////////////
 
 
 def bin_to_dec(x):
@@ -127,13 +130,15 @@ def bin_to_dec(x):
 def dec_to_bin(x):
     return f'{x:b}'
 
-
-def split_string(ip):
+#Function to split any string according to the parameter
+def split_input_data(ip):
     ip = ip.split('.')
-    if len(ip) == 4:
-        ip = string_int_A(ip)
-    else:
+    
+    #Input size verify
+    #Return -1 in case of wrong size
+    if len(ip) != 4:
         ip = -1
+        #ip = string_to_int_Arr(ip)
 
     return ip
 
@@ -146,14 +151,14 @@ def int_string_A(ip):
         i += 1
     return ip_str
 
-
-def string_int_A(ip):
+#Convert a string array (of integer numbers) into an int array 
+def string_to_int_Arr(ipA):
     i = 0
-    ip_int = [0] * 4
+    
     while i < 4:
-        ip_int[i] = int(ip[i])
+        temp = int(ipA[i])
+        ipA[i] = temp
         i += 1
-    return ip_int
 
 
 def A():
@@ -178,17 +183,6 @@ def C():
         subnet_mask[i] = 255
         i += 1
     return subnet_mask
-
-
-def default_mask(ip_class):
-    switcher = {
-        1: A,
-        2: B,
-        3: C,
-    }
-    func = switcher.get(ip_class, lambda: "Invalid option.")
-    print("Mascara de subred: {}".format(func()))
-    return func()
 
 
 def increment_num(mask_inf):
@@ -233,104 +227,94 @@ def eight_bits(ipA):
 
     return temp_ipA
 
-
+#Return the category of the IP
 def ip_category(first_8_Bits):
 
     if (first_8_Bits >= 1) and (first_8_Bits <= 127):
-        print("\n\nLa ip pertenece a la clase A.\n\n")
+        print("\n\nThe IP belongs to the A class.\n\n")
         ip_class = 1
     elif (first_8_Bits >= 128) and (first_8_Bits <= 191):
-        print("\n\nLa ip pertenece a la clase B.\n\n")
+        print("\n\nThe IP belongs to the B class.\n\n")
         ip_class = 2
     elif (first_8_Bits >= 192) and (first_8_Bits <= 223):
-        print("\n\nLa ip pertenece a la clase C.\n\n")
+        print("\n\nThe IP belongs to the C class.\n\n")
         ip_class = 3
     elif (first_8_Bits >= 224) and (first_8_Bits <= 239):
-        print("\n\nLa ip pertenece a la clase D.\n\n")
+        print("\n\nThe IP belongs to the D class.\n\n")
         ip_class = 4
     elif (first_8_Bits >= 240) and (first_8_Bits <= 255):
-        print("\n\nLa ip pertenece a la clase E.\n\n")
+        print("\n\nThe IP belongs to the E class.\n\n")
         ip_class = 5
     return ip_class
 
-
+#Return the net IP (special_subnet_mask_num)
 def special_net_ip(ipA, special_mask_num):
     i = 0
     j = 0
     temp = ''
-    temp_mask_segment = ''
+
+    #Convert the array int into string-hex array
     binary = eight_bits(ipA)
-    subnet_ip_and_subnet_mask = [0] * 2
-    subnet_mask = [0] * 4
+
     net_ip = [0] * 4
+
+    #Counter who saves the number of bits to been through the loop
     count = 1
     while i < 4:
         if j < 8:
             if count <= special_mask_num:
                 temp += "{0:b}".format(int(binary[i][j]) & 1)
-                temp_mask_segment += '1'
             else:
                 temp += "{0:b}".format(int(binary[i][j]) & 0)
-                temp_mask_segment += '0'
             count += 1
             j += 1
         else:
             net_ip[i] = temp
-            subnet_mask[i] = temp_mask_segment
             i += 1
             j = 0
-            temp_mask_segment = ''
             temp = ''
 
     i = 0
     while i < 4:
         net_ip[i] = bin_to_dec(bin(int(net_ip[i], 2)))
-        subnet_mask[i] = bin_to_dec(bin(int(subnet_mask[i], 2)))
-        i += 1
-    print("\n\nLa ip de red de la ip ingresada es: {}".format(net_ip))
-    print("La mascara de subred de la ip ingresada es: {}".format(subnet_mask))
-    subnet_ip_and_subnet_mask[0] = net_ip
-    subnet_ip_and_subnet_mask[1] = subnet_mask
-    return subnet_ip_and_subnet_mask
-
-
-def net_ip_func(ipA, subnet_mask):
-    i = 0
-    binary = eight_bits(ipA)
-    binary_subnet_mask = eight_bits(subnet_mask)
-    net_ip = [''] * 4
-    aux = ''
-
-    while i < 4:
-        temp = [''] * 8
-        j = 0
-        while j < 8:
-            temp[j] = "{0:b}".format(
-                int(binary[i][j]) & int(binary_subnet_mask[i][j]))
-            aux += temp[j]
-            j += 1
-
-        net_ip[i] = aux
-        aux = ''
-        i += 1
-
-    i = 0
-    while i < 4:
-        j = 0
-        temp = ''
-        while j < 8:
-            temp += str(binary_subnet_mask[i][j])
-            j += 1
-        net_ip[i] = bin_to_dec(bin(int(net_ip[i], base=2)))
-        subnet_mask[i] = bin_to_dec(bin(int(temp, base=2)))
         i += 1
 
     print("\n\nLa ip de red de la ip ingresada es: {}".format(net_ip))
-
     return net_ip
 
+#Return the subnet mask of an IP (special_subnet_mask_num)
+def special_subnet_mask(special_mask_num):
+    i = 0
+    j = 0
+    temp_mask_segment = ''
+    subnet_mask = [0] * 4
 
-def special_ip_broadcast(subnet_ip, special_mask_num):
+    #Counter who saves the number of bits to been through the loop
+    count = 1
+    while i < 4:
+        if j < 8:
+            if count <= special_mask_num:
+                temp_mask_segment += '1'
+            else:
+                temp_mask_segment += '0'
+            count += 1
+            j += 1
+        else:
+            subnet_mask[i] = temp_mask_segment
+            i += 1
+            j = 0
+            temp_mask_segment = ''
+
+    i = 0
+    while i < 4:
+        subnet_mask[i] = bin_to_dec(bin(int(subnet_mask[i], 2)))
+        i += 1
+
+    print("La mascara de subred de la ip ingresada es: {}".format(subnet_mask))
+    return subnet_mask
+
+#Return the broadcast IP (special_subnet_mask_num)
+def special_broadcast_ip(subnet_ip, special_mask_num):
 
     i = 0
     copy_subnet_ip = [0] * 4
@@ -379,7 +363,54 @@ def special_ip_broadcast(subnet_ip, special_mask_num):
 
     print("Broadcast ip: {}\n\n".format(broadcast_ip))
 
+#Return the net IP (default_subnet_mask_num)
+def net_ip_func(ipA, subnet_mask):
+    i = 0
+    binary = eight_bits(ipA)
+    binary_subnet_mask = eight_bits(subnet_mask)
+    net_ip = [''] * 4
+    aux = ''
 
+    while i < 4:
+        temp = [''] * 8
+        j = 0
+        while j < 8:
+            temp[j] = "{0:b}".format(
+                int(binary[i][j]) & int(binary_subnet_mask[i][j]))
+            aux += temp[j]
+            j += 1
+
+        net_ip[i] = aux
+        aux = ''
+        i += 1
+
+    i = 0
+    while i < 4:
+        j = 0
+        temp = ''
+        while j < 8:
+            temp += str(binary_subnet_mask[i][j])
+            j += 1
+        net_ip[i] = bin_to_dec(bin(int(net_ip[i], base=2)))
+        subnet_mask[i] = bin_to_dec(bin(int(temp, base=2)))
+        i += 1
+
+    print("\n\nLa ip de red de la ip ingresada es: {}".format(net_ip))
+
+    return net_ip
+
+#Return the subnet mask (default_subnet_mask_num)
+def default_mask(ip_class):
+    switcher = {
+        1: A,
+        2: B,
+        3: C,
+    }
+    func = switcher.get(ip_class, lambda: "Invalid option.")
+    print("Mascara de subred: {}".format(func()))
+    return func()
+
+#Return the broadcast IP (default_subnet_mask_num)
 def ip_broadcast_func(subnet_ip, category):
 
     i = 0
@@ -411,16 +442,19 @@ def ip_broadcast_func(subnet_ip, category):
         i += 1
     print("Broadcast ip: {}\n\n".format(broadcast_ip))
 
-
+#Function to make sure if the input data (The IP) are correct
 def limits_check(ipA):
 
+    #Verifying first the var content (case: wrong data)
     if ipA == -1:
         anws = False
+
     else:
         anws = True
         i = 0
         while i < 4:
-            if ipA[i] < 256:
+            #Verifying the array content (it's an IP?)
+            if (ipA[i].isdigit() == True) and (int(ipA[0]) != 0) and (int(ipA[i]) >= 0) and (int(ipA[i]) < 256) :
                 i += 1
             else:
                 anws = False
@@ -557,44 +591,65 @@ def range_hosts(net_ip, broadcast_ip_subnet, subnet_pos):
 
     return r
 
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+def set_the_ip():
+    ip = input("Set the IP: ")
+    #Trying to split the IP in 4 parts
+    return split_input_data(ip)
 
-def questions(answer):
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Main_Function>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+def main(answer):
 
     i = 0
-    ip = input("Ingrese una dirección ip: ")
-    ipA = split_string(ip)
-
+    ipA = set_the_ip()
+    #Loop to set a correct IP 
     while limits_check(ipA) == False:
-        print("\nLa dirección ip proporcionada no es válida.\n")
-        ip = input("Ingrese una dirección ip: ")
-        ipA = split_string(ip)
-
+        print("\nThe input data doesn't look like an IP address.\nPlease set a correct one.\n")
+        ipA = set_the_ip()
+    
+    #Convert the string array into an int array
+    string_to_int_Arr(ipA)
+    
+    #Getting the IP's category
     category = ip_category(ipA[0])
 
- #############################################################
-    ssnm = input(
-        "¿Su ip tiene una mascara de subred especial? \n\t y = yes\tn = no\n#R:")
-    if ssnm.lower() == 'y':
+    while True:
+        #Classes D & E exception (Classes without default subnet mask)
+        if category == 4 or category == 5:
+            ssnm = 'y'
+        else:
+            #Asking the type of subnet mask (ssnm = special subnet mask)
+            ssnm = input(
+                "The IP have a special subnet mask? \n\t y = yes\tn = no (set the standard subnet mask)\n#R:")
+    
+        if ssnm.lower() == 'y':
 
-        special_mask_num = int(
-            input("\nIngrese el numero de la mascara de subred a continuación: "))
-        subnet_ip_and_subnet_mask = special_net_ip(ipA, special_mask_num)
-        net_ip = subnet_ip_and_subnet_mask[0]
-        subnet_mask = subnet_ip_and_subnet_mask[1]
-        special_ip_broadcast(net_ip, special_mask_num)
+            while True:
+                special_mask_num = input("\nEnter the subnet mask number below: ")
+                
+                #Verifying the input data
+                if (special_mask_num.isdigit()) and (int(special_mask_num) > 0) and (int(special_mask_num) <= 32):
+                    special_mask_num = int(special_mask_num)
+                    break 
+                else:
+                    print(
+                        "\nIllegal value for subnet mask! Please enter a valid number.")
 
-    elif ssnm.lower() == 'n':
+            net_ip = special_net_ip(ipA, special_mask_num)         #Net IP
+            subnet_mask = special_subnet_mask(special_mask_num)    #Subnet Mask
+            special_broadcast_ip(net_ip, special_mask_num)         #Broadcast IP
+            break
 
-        subnet_mask = default_mask(category)
-        net_ip = net_ip_func(ipA, subnet_mask)
-        ip_broadcast_func(net_ip, category)
+        elif ssnm.lower() == 'n':
 
-    else:
-        print("Ingrese una opción válida.")
+            subnet_mask = default_mask(category)                   #Net IP
+            net_ip = net_ip_func(ipA, subnet_mask)                 #Subnet Mask
+            ip_broadcast_func(net_ip, category)                    #Broadcast IP
+            break
 
-    ######################################
+        else:
+            print("\nError! Invalid option. Select one of the following options: ")
+
     if answer == 's':
         temp_subnet = [0] * 3
         subnet_num = input("Ingrese el numero de subredes que desea obtener: ")
@@ -629,7 +684,6 @@ def questions(answer):
             i += 1
             print("|//////////////////////////////////////////////////////////////|")
 
-        print("\n#################################################################################################")
 
         # Sorting the subnet list to descending form
         sorted_subnet_list = sorted(
@@ -637,7 +691,8 @@ def questions(answer):
         final_subnet_list = [0] * subnet_for_host_num
 
         i = 0
-        # Saving the final data in the array for print(sorted)
+        
+        # Saving the final data in the array for print (sorted)
         while i < subnet_for_host_num:
             temp_subnet = [0] * 3
             temp_subnet[0] = sorted_subnet_list[i][0]
@@ -647,22 +702,24 @@ def questions(answer):
             i += 1
 
         generate_list(final_subnet_list, net_ip)
+        print("\n#################################################################################################")
 
-
-################################################################################
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Init_code>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 signal(SIGINT, signal_handler)
 
-fp = open("banner.ban", "r", encoding='UTF-8')
+################# Banner block #################
+#Open the banner file (READ_ONLY)              #
+fp = open("banner.ban", "r", encoding='UTF-8') #
+# Display the banner                           #
+print(fp.read())                               #
+################################################
 
-print(fp.read())
-answer = input(
-    "\n---------------> Generate subnets only with the IP or subnets based on hosts? \n---------------> Subnets = s\tHosts = h\n#R: ")
 while True:
+    answer = input(
+        "\n---------------> Generate subnets only with the IP or subnets based on hosts? \n---------------> Subnets = s\tHosts = h\n#R: ")
     if answer == 'h' or answer == 's':
         break
     else:
         print("\nInput data error!")
-        answer = input(
-            "\n---------------> Generate subnets only with the IP or subnets based on hosts? \n---------------> Subnets = s\tHosts = h\n#R: ")
 
-questions(answer)
+main(answer)
