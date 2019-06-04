@@ -6,22 +6,12 @@ from signal import SIGINT, signal
 # ///////////////////////////////Host functions///////////////////////////////////
 
 
-def get_n_host(num):
-    i = 0
-    while True:
-        if (pow(2, i)-2) >= num:
-            break
-        i = i+1
-    print("n = {}".format(i))
-    return i
-
-
 def get_hosts(host_num):
     """ Array with host data """
     host_data = [0] * 3
 
-    host_data[0] = get_n_host(int(host_num))  # Num of
-    mask_inf = adapted_mask_host(host_data[0])  # Position
+    host_data[0] = get_n(int(host_num), 'h')        # Number of zeros in the subnet mask.
+    mask_inf = adapted_mask_host(host_data[0])      # Position
     host_data[1] = mask_inf[1]
     host_data[2] = increment_num(mask_inf)
 
@@ -67,66 +57,97 @@ def adapted_mask_host(n):
 
 # //////////////////////////////Subnet functions//////////////////////////////////
 
-
-def get_n_subnet(num):
+#Return the segment of binary numbers (eight) which changes in the subnet mask
+def modify_8_bits_segment(n, binary_segment):
+    
+    #Arr with the new changes (the segment and the n var)
+    modification_info = [0] * 2
     i = 0
-    while True:
-        if num == 0:
-            break
-        if pow(2, i) >= num:
-            break
-        i = i+1
-    print("n = {}".format(i))
-    return i
+    
+    #Case the segment is == 0
+    if binary_segment == '0':
+        #reset var
+        binary_segment = ''
+        while n > 0:
+            #append a 1
+            binary_segment += '1'
+            i += 1
+            #Substract one bit
+            n -= 1
+        if len(binary_segment) < 8:
+            while len(binary_segment) < 8:
+                #append a 0
+                binary_segment += '0'
 
-
-def pos_subnet_mask(i, subnet_mask, decimal):
-    mask_inf = []
-    subnet_mask[i] = decimal
-    mask_inf.append(subnet_mask)
-    mask_inf.append(i)
-    return mask_inf
-
-
-def change_binary_subnet(n):
-    i = 1
-    final = ''
-    while i <= n:
-        final += '1'
-        i += 1
-    while len(final) < 8:
-        final += '0'
-    return final
-
-
-def adapted_mask_subnet(subnet_mask, n):
-    mask_inf = []
-    if n == 0:
-        mask_inf.append(subnet_mask)
-        mask_inf.append(str(n))
     else:
-        binary = bin(int(change_binary_subnet(n), 2))
-        decimal = bin_to_dec(binary)
-        if int(subnet_mask[1]) == 0:
-            mask_inf = pos_subnet_mask(1, subnet_mask, decimal)
+        #Convert the string segment into a list
+        binary_segment = list(binary_segment)
+        while (i < 8) and (n > 0):
+            if binary_segment[i] == '0':
+                #append a 1
+                binary_segment[i] = '1'
+                i += 1
+                #Substract one bit
+                n -= 1
+            else:
+                i += 1
 
-        elif int(subnet_mask[2]) == 0:
-            mask_inf = pos_subnet_mask(2, subnet_mask, decimal)
+        #Convert the list into a string
+        binary_segment = ''.join(binary_segment)
+    
+    #Segment that gonna replace the older segment (in binary)
+    binary = bin(int(binary_segment, 2))
+    #Convert the binary into decimal system
+    decimal = bin_to_dec(binary)
 
-        elif int(subnet_mask[3]) == 0:
-            mask_inf = pos_subnet_mask(3, subnet_mask, decimal)
+    #Save the data
+    modification_info[0] = decimal
+    modification_info[1] = n
+    
+    return modification_info
 
-    print("Mascara de subred adaptada: {}".format(subnet_mask))
+#Return the new subnet mask
+def adapted_subnet_mask(subnet_mask, n):
+
+    i = 0
+    #Array with the subnet mask inf.
+    mask_inf = []
+    #Array with the new changes (new segment and the n var)
+    modification_info = [0] * 2
+
+    while i < 4:
+        
+        if subnet_mask[i] < 255:
+            #Convert the integer segment to binary segment
+            binary_segment = dec_to_bin(subnet_mask[i])
+            #Modify the segment
+            modification_info = modify_8_bits_segment(n, binary_segment)
+            
+            subnet_mask[i] = modification_info[0]
+            n = modification_info[1]
+            
+            #Break in case the n number becomes 0
+            if n == 0:
+                break
+            else:
+                i += 1
+        else:
+            i += 1
+    
+    mask_inf.append(subnet_mask)        #Subnet mask
+    mask_inf.append(i)                  #Position of the last modified segment
+
+    print("Adapted subnet mask: {}".format(subnet_mask))
     return mask_inf
 
 
 # //////////////////////////////General functions/////////////////////////////////
 
-
+#Return a converted decimal number into decimal number
 def bin_to_dec(x):
     return int(x, 2)
 
-
+#Return a converted binary number into decimal number
 def dec_to_bin(x):
     return f'{x:b}'
 
@@ -142,15 +163,6 @@ def split_input_data(ip):
 
     return ip
 
-
-def int_string_A(ip):
-    i = 0
-    ip_str = [0] * 4
-    while i < 4:
-        ip_str[i] = str(ip[i])
-        i += 1
-    return ip_str
-
 #Convert a string array (of integer numbers) into an int array 
 def string_to_int_Arr(ipA):
     i = 0
@@ -160,13 +172,13 @@ def string_to_int_Arr(ipA):
         ipA[i] = temp
         i += 1
 
-
+#Return the default subnet mask for class A
 def A():
     subnet_mask = [0] * 4
     subnet_mask[0] = 255
     return subnet_mask
 
-
+#Return the default subnet mask for class B
 def B():
     i = 0
     subnet_mask = [0] * 4
@@ -175,7 +187,7 @@ def B():
         i += 1
     return subnet_mask
 
-
+#Return the default subnet mask for class C
 def C():
     i = 0
     subnet_mask = [0] * 4
@@ -184,18 +196,18 @@ def C():
         i += 1
     return subnet_mask
 
-
+#Return the incremental number for the subnet list
 def increment_num(mask_inf):
-    inc = 0
-    if int(mask_inf[1]) == 0:
-        inc = 0
-    elif int(mask_inf[1]) == 1:
-        inc = 256-int(mask_inf[0][1])
-    elif int(mask_inf[1]) == 2:
-        inc = 256-int(mask_inf[0][2])
-    elif int(mask_inf[1]) == 3:
-        inc = 256-int(mask_inf[0][3])
-    print("Numero de incremento: {}\n".format(inc))
+    
+    i = 1
+    while True:
+        if int(mask_inf[1]) == i:                #Search the position of the last modified segment
+            inc = 256-int(mask_inf[0][i])
+            break
+        else:
+            i += 1
+    
+    print("Increment number: {}\n".format(inc))
     return inc
 
 
@@ -226,6 +238,30 @@ def eight_bits(ipA):
         i += 1
 
     return temp_ipA
+
+#Return the number of zeros which gonna change in the subnet mask.
+def get_n(num_host_request, operation_type):
+    
+    #Number of zeros
+    n = 0
+    #Conditional
+    operation_result = 0
+    
+    while True:
+
+        #Subnets formula
+        if operation_type == 's':
+            operation_result = pow(2, n)
+        #Host's formula
+        elif operation_type == 'h':
+            operation_result = (pow(2, n)-2)
+        
+        if  operation_result >= num_host_request:
+            break
+        else:
+            n = n + 1
+    print("n = {}".format(n))
+    return n
 
 #Return the category of the IP
 def ip_category(first_8_Bits):
@@ -395,7 +431,7 @@ def net_ip_func(ipA, subnet_mask):
         subnet_mask[i] = bin_to_dec(bin(int(temp, base=2)))
         i += 1
 
-    print("\n\nLa ip de red de la ip ingresada es: {}".format(net_ip))
+    print("La ip de red de la ip ingresada es: {}".format(net_ip))
 
     return net_ip
 
@@ -407,7 +443,7 @@ def default_mask(ip_class):
         3: C,
     }
     func = switcher.get(ip_class, lambda: "Invalid option.")
-    print("Mascara de subred: {}".format(func()))
+    print("\n\nSubnet mask: {}".format(func()))
     return func()
 
 #Return the broadcast IP (default_subnet_mask_num)
@@ -505,17 +541,17 @@ def signal_handler(sig, frame):
     print("El programa a finalizado.")
     exit(0)
 
-
-def generate_list(subnet_for_host, net_ip):
+#Print the subnet list
+def generate_list(subnet_list, net_ip):
 
     i = 0
     total_prints = 0
     broadcast_ip_subnet = [0] * 4
     tmp_subnet_ip = [0] * 4
     tmp_broadcast_ip_subnet = [0] * 4
-    size = len(subnet_for_host)
+    size = len(subnet_list)
     while i < size:
-        total_prints += subnet_for_host[i][0]
+        total_prints += subnet_list[i][0]
         i += 1
 
     i = 0
@@ -526,7 +562,7 @@ def generate_list(subnet_for_host, net_ip):
     print(" Red\t\tIP-red\t\t\t\tRango\t\t\t\t    Broadcast")
     while i < total_prints:
 
-        while j < subnet_for_host[k][0]:
+        while j < subnet_list[k][0]:
 
             if j == 0:
 
@@ -534,21 +570,21 @@ def generate_list(subnet_for_host, net_ip):
                     auto_check_and_copy(broadcast_ip_subnet,
                                         net_ip, tmp_subnet_ip)
                     auto_increment_decrement(
-                        broadcast_ip_subnet, 'd', subnet_for_host[k][1], subnet_for_host[k][2], False)
+                        broadcast_ip_subnet, 'd', subnet_list[k][1], subnet_list[k][2], False)
 
                 else:
-                    net_ip[subnet_for_host[k-1][1]] += subnet_for_host[k-1][2]
+                    net_ip[subnet_list[k-1][1]] += subnet_list[k-1][2]
                     auto_check_and_copy(broadcast_ip_subnet,
                                         net_ip, tmp_subnet_ip)
                     auto_increment_decrement(
-                        broadcast_ip_subnet, 'd', subnet_for_host[k][1], subnet_for_host[k][2], True)
+                        broadcast_ip_subnet, 'd', subnet_list[k][1], subnet_list[k][2], True)
 
             else:
-                net_ip[subnet_for_host[k][1]] += subnet_for_host[k][2]
+                net_ip[subnet_list[k][1]] += subnet_list[k][2]
                 auto_increment_decrement(net_ip, 'i', 0, 0, False)
                 auto_check_and_copy(broadcast_ip_subnet, net_ip, tmp_subnet_ip)
                 auto_increment_decrement(
-                    broadcast_ip_subnet, 'd', subnet_for_host[k][1], subnet_for_host[k][2], True)
+                    broadcast_ip_subnet, 'd', subnet_list[k][1], subnet_list[k][2], True)
 
             while l < 4:
                 tmp_broadcast_ip_subnet[l] = broadcast_ip_subnet[l]
@@ -556,7 +592,7 @@ def generate_list(subnet_for_host, net_ip):
 
             l = 0
             range_h = range_hosts(
-                tmp_subnet_ip, tmp_broadcast_ip_subnet, subnet_for_host[k][1])
+                tmp_subnet_ip, tmp_broadcast_ip_subnet, subnet_list[k][1])
             print("  {}\t    {}\t{}      \t{}".format(
                 i, net_ip, range_h, broadcast_ip_subnet))
             i += 1
@@ -616,6 +652,7 @@ def main(answer):
     while True:
         #Classes D & E exception (Classes without default subnet mask)
         if category == 4 or category == 5:
+            #Asssign directly the answer to the question below
             ssnm = 'y'
         else:
             #Asking the type of subnet mask (ssnm = special subnet mask)
@@ -650,18 +687,35 @@ def main(answer):
         else:
             print("\nError! Invalid option. Select one of the following options: ")
 
+    #According to the first question (subnet or host) make the respective operations
+    #Case subnet 
     if answer == 's':
-        temp_subnet = [0] * 3
-        subnet_num = input("Ingrese el numero de subredes que desea obtener: ")
-        subnet_for_subnet = []
-        temp_subnet[0] = int(subnet_num)
-        n = get_n_subnet(int(subnet_num))
-        mask_inf = adapted_mask_subnet(subnet_mask, n)
-        temp_subnet[1] = mask_inf[1]
-        inc_num = increment_num(mask_inf)
-        temp_subnet[2] = inc_num
-        subnet_for_subnet.append(temp_subnet)
-        generate_list(subnet_for_subnet, net_ip)
+
+        #Temporal data array with the information of the subnet
+        temp_subnet = [0] * 3 
+        
+        #Number of subnets to generate
+        while True:
+            subnet_num = input("Enter the number of subnets you want to generate: ")
+            if subnet_num.isdigit() and int(subnet_num) > 0:
+                break
+            else:
+                print("Invalid input!")
+
+        #Array with the data for print the list
+        subnet_list = []
+        
+        temp_subnet[0] = int(subnet_num)                      #Number of subnets to generate
+        #Number of zeros which gonna change in the subnet mask.
+        n = get_n(int(subnet_num), 's')                       
+        mask_inf = adapted_subnet_mask(subnet_mask, n)        #Obtaining the subnet mask information
+        temp_subnet[1] = mask_inf[1]                          #Position of the last modified segment of 8 bits
+        inc_num = increment_num(mask_inf)                     #Incremental number for the subnet
+        temp_subnet[2] = inc_num                              
+        subnet_list.append(temp_subnet)
+        generate_list(subnet_list, net_ip)                    #Generate and print the subnet list
+    
+    #Case host
     elif answer == 'h':
         subnet_for_host_num = int(input(
             "¿Cuántas subredes de n-host desea obtener?\t(omitiendo repeticiones)\n#R: "))
