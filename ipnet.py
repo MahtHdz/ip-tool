@@ -255,7 +255,7 @@ class IP():
             elif operation_type == 'h':
                 operation_result = (pow(2, n)-2)
 
-            if operation_result >= num_host_request:
+            if (operation_result > num_host_request) or (operation_result == num_host_request): 
                 break
             else:
                 n = n + 1
@@ -376,7 +376,7 @@ class IP():
         pos_i = noDefault_mask_prefix // 8
         # Number of the bit in the octet to start the AND operations
         pos_j = noDefault_mask_prefix % 8
-        # Flag to reset pos_i flag to 0
+        # Flag to reset *pos_i* to 0
         reset = False
 
         while pos_i < 4:
@@ -781,7 +781,7 @@ def main():
         # Array with the data for print the list
         subnet_list = []
         # Number of subnets to generate
-        temp_subnet[0] = int(subnets_num)
+        temp_subnet[0] = int(subnets_num) + 1
         # Number of zeros which gonna change in the subnet mask.
         n = ip.get_n(int(subnets_num), 's')
         # Obtaining the subnet mask information
@@ -846,7 +846,7 @@ def main():
             host_data[2] = ip.increment_num(mask_inf)
 
             # Subnet No. request
-            temp_subnet[0] = no_subnets_of_n_hosts
+            temp_subnet[0] = no_subnets_of_n_hosts + 1
             # Position of the last modified octet of 8 bits
             temp_subnet[1] = host_data[1]
             # Incremental number for the subnet
