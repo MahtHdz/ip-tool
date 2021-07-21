@@ -84,7 +84,7 @@ class System:
                 # Incremental number for the subnet
                 host_data[2] = self._ip.incrementNo(mask_inf)
                 # Subnet No. request
-                temp_subnet[0] = no_subnets_of_n_hosts + 1
+                temp_subnet[0] = no_subnets_of_n_hosts
                 # Position of the last modified octet of 8 bits
                 temp_subnet[1] = host_data[1]
                 # Incremental number for the subnet
