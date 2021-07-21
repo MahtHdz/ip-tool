@@ -39,7 +39,7 @@ if __name__ == "__main__":
                 subnetMaskPrefix = input(
                     "\n Enter the subnet mask prefix below: ")
                 # Check the input data
-                if (subnetMaskPrefix.isdigit()) and (int(subnetMaskPrefix) > 0) and (int(subnetMaskPrefix) <= 32):
+                if (subnetMaskPrefix.isdigit()) and (int(subnetMaskPrefix) > 0) and (int(subnetMaskPrefix) <= 30):
                     subnetMaskPrefix = int(subnetMaskPrefix)
                     default = False
                     ip.setTriada(rootIP, -1, subnetMaskPrefix, default)
