@@ -169,7 +169,6 @@ class IP():
         return modification_data
 
     # //////////////////////////////General functions/////////////////////////////////
-    
     #
     def genSubnetMask(self):
         pass
@@ -188,7 +187,6 @@ class IP():
     #
     def getTriada(self) -> list:
         return self._triada
-    
     #
     def setTriada(self, rootIP: list, ipClass: int, subnetMaskPrefix: int, default: bool) -> None:
         if default:
@@ -207,7 +205,6 @@ class IP():
             # Broadcast IP
             broadcast = None
             self.broadcastForNonDefaultSM(networkIP, subnetMaskPrefix)
-        
         self._triada.append(networkIP)
         self._triada.append(subnetMask)
         #self._triada.append(broadcast)
@@ -323,11 +320,10 @@ class IP():
             ipClass = 5
 
         print("\n\n The IP belongs to {} class.\n\n".format(class_arr[ipClass - 1]))
-        
-        # The IP can be used for public propuse?
+        # The IP can be used for public propose?
         if ipClass == 4 or ipClass == 5:
             print(
-                " Exception: Classes D & E are only used for Multicasting and Military Purposes.")
+                " Exception: Classes D & E are only used for Multicast and Military Purposes.")
             exit(0)
         else:
             return ipClass
@@ -343,7 +339,7 @@ class IP():
             anws = True
             i = 0
 
-            # Cheking the first element of the array
+            # Checking the first element of the array
             if (ipA[i].isdigit() == True) and (int(ipA[i]) > 0) and (int(ipA[i]) < 256):
                 i += 1
                 # Verifying the remainder elements in the array (it's an IP?)
@@ -395,7 +391,7 @@ class IP():
 
         i = 0
 
-        # Fuction to verify if the IP isn't overflowed
+        # Function to verify if the IP isn't overflowed
         self.fix_ip(net_ip)
 
         # Prepare the broadcast IP and the temporal subnet IP for the next step
@@ -414,7 +410,7 @@ class IP():
     def generate_list(self, subnet_list: list, net_ip: list) -> None:
 
         i = 0
-        # Number of total prints (inizialiced)
+        # Number of total prints (initialized)
         total_prints = 0
         # Individual broadcast of each subnet
         broadcast_subnet_ip = [0] * 4
@@ -641,7 +637,7 @@ class IP():
             net_ip[i] = int(net_ip[i], 2)
             i += 1
 
-        print("\n\nThe newtwork IP of the input IP is: {}".format(net_ip))
+        print("\n\nThe network IP of the input IP is: {}".format(net_ip))
         return net_ip
 
     # Return the subnet mask of an IP (noDefault subnet mask prefix)
