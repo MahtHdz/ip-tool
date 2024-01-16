@@ -110,7 +110,7 @@ class System:
                 i += 1
             self._ip.generate_list(final_subnet_list, triada[0])
 
-    # 
+    #
     def setTheMainOperation(self) -> str:
         while True:
             print("\n\n                    Generate: ")
@@ -121,9 +121,9 @@ class System:
                 break
             else:
                 print("\n Error: invalid option.")
-        return opType 
+        return opType
 
-    # Function in case of the user press ctrl + c to exit   
+    # Function in case of the user press ctrl + c to exit
     def signal_handler(self, signum, frame) -> None:
         print("\n\n Warning: Execution was interrupted.")
         print(" Killing process . . .\n (X_X) -> EXIT_CODE: 0xDEAD")

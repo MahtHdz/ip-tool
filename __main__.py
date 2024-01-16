@@ -21,14 +21,11 @@ if __name__ == "__main__":
     ###############################################
 
     op = sys.setTheMainOperation()
-    
     rootIP = ip.getInputIP()
-    
     # Convert the string array to an int one
     ip.string_to_int_Arr(rootIP)
     # Getting the class of the root IP
     ipClass = ip.getClass(rootIP[0])
-    
     default = True
     while True:
         # Asking the type of subnet mask (nssm = non-default subnet mask)
@@ -54,5 +51,4 @@ if __name__ == "__main__":
             break
         else:
             print("\n Error: Invalid option.")
-    
     sys.executeOp(op, ip.getTriada())
